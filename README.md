@@ -1,37 +1,70 @@
 # OrderPulse — Real-Time Order Updates
 
-A backend system that pushes database changes to connected clients **instantly**, without any polling.
+A backend system that pushes database changes to connected clients **instantly**, without any polling. Built for the Apt Interview Assignment.
+
+🔴 **Live Demo:** https://realtime-db-update-assignment.onrender.com
+
+---
+
+## What It Does
+
+When any order is inserted, updated, or deleted in the database — every connected browser client sees the change **immediately**, without refreshing the page. The database itself fires the event through a trigger, so even changes made directly via SQL (outside the app) will still reach all clients in real time.
 
 ---
 
 ## How It Works
 
 ```
-DB change (insert/update/delete)
-       ↓
+DB change (insert / update / delete)
+           ↓
 Postgres trigger fires automatically
-       ↓
+           ↓
 NOTIFY sent on 'orders_channel'
-       ↓
+           ↓
 Node.js server receives the notification
-       ↓
-Broadcasts to all clients via WebSocket
-       ↓
-Browser updates the table in real time
+           ↓
+Broadcasts to all connected clients via WebSocket
+           ↓
+Browser updates the table instantly — no refresh needed
 ```
 
-The key insight: the database itself fires the event. No timers, no polling, no wasted requests.
+The key design decision: **the database drives the events, not the application layer.** This means even direct SQL changes (from pgAdmin, scripts, or other services) will propagate to clients automatically.
 
 ---
 
-## Tech Stack
+## Tech Stack & Why
 
 | Layer | Choice | Why |
 |---|---|---|
-| Database | PostgreSQL | Native LISTEN/NOTIFY — built-in pub/sub, no extra tools |
-| Backend | Node.js + Express | Lightweight, great WebSocket support |
-| Real-time transport | WebSocket (ws) | Persistent connection, instant push from server to client |
-| Frontend | Vanilla HTML/JS | No framework needed for this use case |
+| Database | PostgreSQL | Native LISTEN/NOTIFY — built-in pub/sub with zero extra infrastructure. No polling, no middleware, the DB itself pushes events the moment a row changes. |
+| Backend | Node.js + Express | Non-blocking I/O handles many concurrent WebSocket connections efficiently. Lightweight and fast to set up. |
+| Real-time transport | WebSocket (ws) | Persistent two-way connection — server can push to clients instantly. Unlike HTTP polling, there's no repeated request overhead. |
+| Frontend | Vanilla HTML/JS | No framework needed. Keeps the client simple, fast, and easy to understand without build tools. |
+| Deployment | Docker + Render | Docker ensures the app runs identically in any environment. Render auto-deploys on every GitHub push. |
+| Cloud DB | Neon (Postgres) | Free hosted Postgres with full LISTEN/NOTIFY support — no local DB required for the live demo. |
+
+### Why PostgreSQL over MySQL or MongoDB?
+
+**MySQL** has no native pub/sub. Replicating this would require parsing binary logs with external tools like Debezium — adding unnecessary complexity.
+
+**MongoDB** has Change Streams but requires a Replica Set even for local development, which is heavy setup overhead. The data model here is also clearly relational.
+
+**PostgreSQL's LISTEN/NOTIFY** is built in, requires zero extra tools, and fires synchronously with the transaction — making it the cleanest solution for this problem.
+
+---
+
+## Features
+
+- **Real-time updates** — all connected clients receive inserts, updates, and deletes instantly via WebSocket
+- **Live dashboard** — browser UI shows all orders in a table with color-coded status badges
+- **Add orders** — create new orders with customer name, product, and status
+- **Update orders** — edit any field (customer name, product name, status) via a modal form
+- **Delete orders** — confirmation modal shows full order details before deletion
+- **Activity log** — shows every database event (INSERT / UPDATE / DELETE) with exactly what changed
+- **Change detection** — UPDATE events show which fields changed and their old → new values
+- **Log history** — last 50 events stored in server memory and replayed to any new client that connects, so the log isn't empty on refresh
+- **Auto-reconnect** — if the WebSocket drops, the client reconnects automatically every 3 seconds
+- **Dockerized** — runs in a container, consistent across all environments
 
 ---
 
@@ -40,88 +73,59 @@ The key insight: the database itself fires the event. No timers, no polling, no 
 ```
 realtime-orders/
 ├── src/
-│   ├── server.js    — Express + WebSocket server
-│   ├── db.js        — Postgres connection, schema setup, LISTEN logic
-│   └── routes.js    — REST API for orders (GET, POST, PATCH, DELETE)
+│   ├── server.js    — Express server, WebSocket setup, event broadcasting
+│   ├── db.js        — Postgres connection, schema + trigger setup, LISTEN logic
+│   └── routes.js    — REST API (GET / POST / PATCH / DELETE orders)
 ├── public/
-│   └── index.html   — Frontend dashboard
+│   └── index.html   — Frontend dashboard (HTML + CSS + JS, no framework)
+├── Dockerfile       — Container definition for deployment
 ├── .env.example     — Environment variable template
 └── package.json
 ```
 
 ---
 
-## Step 1 — Install PostgreSQL
+## Local Setup
 
-### Windows
-1. Go to https://www.postgresql.org/download/windows/
-2. Download the installer (pick the latest version)
-3. Run it → click Next → Next → Next (defaults are fine)
-4. When asked for a password, set something simple like `postgres123` — **remember this**
-5. Default port is `5432` — leave it
-6. Finish the install
+### Prerequisites
+- Node.js v18+
+- PostgreSQL 14+ installed and running
 
-After installing, open **pgAdmin** (installed with Postgres) or use the terminal:
+### Step 1 — Clone the repo
 
 ```bash
-# open the postgres terminal (psql)
-psql -U postgres
+git clone https://github.com/gaurvijain75/realtime_db_update_assignment.git
+cd realtime_db_update_assignment
 ```
 
-### Mac
-```bash
-brew install postgresql@16
-brew services start postgresql@16
-```
+### Step 2 — Create the database
 
-### Create the database
-Once postgres is running:
 ```bash
 psql -U postgres
 ```
-Then inside psql:
 ```sql
 CREATE DATABASE ordersdb;
 \q
 ```
 
----
-
-## Step 2 — Clone and Install Dependencies
+### Step 3 — Set up environment variables
 
 ```bash
-# clone the repo
-git clone https://github.com/yourusername/realtime-orders.git
-cd realtime-orders
-
-# install node packages
-npm install
-```
-
----
-
-## Step 3 — Set Up Environment Variables
-
-```bash
-# copy the example file
 cp .env.example .env
 ```
 
-Open `.env` and set your database URL:
+Open `.env` and fill in your Postgres password:
 
 ```
-DATABASE_URL=postgresql://postgres:postgres123@localhost:5432/ordersdb
+DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/ordersdb
 PORT=3000
 NODE_ENV=development
 ```
 
-Replace `postgres123` with whatever password you chose during Postgres install.
-
----
-
-## Step 4 — Run the Server
+### Step 4 — Install dependencies and start
 
 ```bash
+npm install
 npm start
 ```
 
@@ -133,85 +137,36 @@ listening for order changes...
 server running on http://localhost:3000
 ```
 
-Open **http://localhost:3000** in your browser — the dashboard is live.
+Open **http://localhost:3000** in your browser.
 
 ---
 
-## Step 5 — Test It
+## Testing Real-Time Updates
 
-Open the dashboard in **two browser tabs side by side**.
+1. Open **http://localhost:3000** in two browser tabs side by side
+2. Add an order in one tab — watch it appear instantly in the other
+3. Click **update** on any order — edit any field and save — both tabs update immediately
+4. Click **delete** — confirm deletion — order disappears from both tabs at the same time
 
-Add an order in one tab — watch it appear instantly in the other tab without any refresh.
+Or test directly via terminal to prove DB-level triggers work:
 
-Or test via curl:
 ```bash
-# add an order
-curl -X POST http://localhost:3000/api/orders \
-  -H "Content-Type: application/json" \
-  -d '{"customer_name":"Alice","product_name":"MacBook","status":"pending"}'
-
-# update status
-curl -X PATCH http://localhost:3000/api/orders/1 \
-  -H "Content-Type: application/json" \
-  -d '{"status":"shipped"}'
-
-# delete
-curl -X DELETE http://localhost:3000/api/orders/1
+# insert directly into DB — bypasses the app entirely
+psql -U postgres -d ordersdb -c \
+  "INSERT INTO orders (customer_name, product_name, status, updated_at) \
+   VALUES ('Terminal User', 'Laptop', 'pending', NOW());"
 ```
 
-Every one of these will instantly update all connected browser clients.
+The browser will update instantly — proving the trigger fires at the database level, not just through the API.
 
 ---
 
-## Hosting on Render (Free)
+## Running with Docker
 
-### Database — use Neon (free Postgres cloud)
-1. Go to https://neon.tech and sign up (free)
-2. Create a new project → it gives you a **connection string** like:
-   ```
-   postgresql://user:pass@ep-something.neon.tech/neondb?sslmode=require
-   ```
-3. Copy it — you'll use this as `DATABASE_URL`
-
-### Backend — deploy on Render
-1. Push your code to GitHub
-2. Go to https://render.com and sign up (free)
-3. Click **New → Web Service**
-4. Connect your GitHub repo
-5. Settings:
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-6. Add environment variable:
-   - Key: `DATABASE_URL`
-   - Value: your Neon connection string
-   - Key: `NODE_ENV`
-   - Value: `production`
-7. Click **Deploy**
-
-Render gives you a URL like `https://realtime-orders.onrender.com` — share that link.
-
----
-
-## Why Not MySQL or MongoDB?
-
-**MySQL** doesn't have a native push notification system. You'd need external tools like Debezium or Maxwell to parse the binary log, which adds a lot of complexity.
-
-**MongoDB** has Change Streams but requires running a Replica Set even for local development — extra setup overhead for no benefit here since the data model is clearly relational.
-
-**PostgreSQL's LISTEN/NOTIFY** lets the database itself fire events the moment a row changes. The trigger handles everything — no polling, no middleware, no extra processes.
-
----
-
-## Scalability Notes
-
-The current setup handles a few hundred concurrent WebSocket connections comfortably on a single Node.js process.
-
-To scale further:
-- Run multiple Node.js instances behind a load balancer
-- Replace direct Postgres LISTEN with **Redis Pub/Sub** — each instance subscribes to Redis, and one listener publishes to it
-- This way all instances receive all events and broadcast to their own connected clients
-
-This is the standard production pattern used by apps like Slack and Notion.
+```bash
+docker build -t orderpulse .
+docker run -p 3000:3000 --env DATABASE_URL=your_db_url orderpulse
+```
 
 ---
 
@@ -221,5 +176,27 @@ This is the standard production pattern used by apps like Slack and Notion.
 |---|---|---|
 | GET | /api/orders | Fetch all orders |
 | POST | /api/orders | Create a new order |
-| PATCH | /api/orders/:id | Update order status |
+| PATCH | /api/orders/:id | Update any fields on an order |
 | DELETE | /api/orders/:id | Delete an order |
+
+---
+
+## Scalability Notes
+
+The current architecture comfortably handles hundreds of concurrent WebSocket connections on a single Node.js process.
+
+To scale horizontally:
+- Run multiple Node.js instances behind a load balancer
+- Replace direct Postgres LISTEN with **Redis Pub/Sub** — each instance subscribes to Redis, one listener publishes DB events to it, and all instances broadcast to their own connected clients
+
+This is the standard production pattern used by real-time systems like Slack and Notion.
+
+---
+
+## Deployment
+
+Hosted on **Render** (Docker) with **Neon** as the cloud Postgres database.
+
+Every push to `main` on GitHub triggers an automatic redeploy on Render.
+
+🔴 **Live:** https://realtime-db-update-assignment.onrender.com
