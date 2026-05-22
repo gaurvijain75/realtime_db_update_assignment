@@ -27,10 +27,8 @@
       color: var(--text);
       font-family: var(--sans);
       min-height: 100vh;
-      padding: 0;
     }
 
-    /* top bar */
     header {
       display: flex;
       align-items: center;
@@ -50,7 +48,6 @@
       letter-spacing: 0.08em;
       color: var(--accent);
     }
-
     .logo span { color: var(--text); }
 
     .status-pill {
@@ -66,21 +63,9 @@
       background: var(--bg);
       transition: all 0.3s;
     }
-
-    .status-pill.connected {
-      border-color: var(--accent);
-      background: var(--accent-dim);
-      color: var(--accent);
-    }
-
+    .status-pill.connected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
     .status-pill.disconnected { color: var(--danger); border-color: var(--danger); }
-
-    .dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
     .connected .dot { animation: pulse 1.8s ease-in-out infinite; }
 
     @keyframes pulse {
@@ -88,7 +73,6 @@
       50% { opacity: 0.3; }
     }
 
-    /* main layout */
     main { padding: 36px 40px; max-width: 1200px; margin: 0 auto; }
 
     .page-title {
@@ -100,7 +84,6 @@
       margin-bottom: 28px;
     }
 
-    /* add order panel */
     .add-panel {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -108,7 +91,6 @@
       padding: 24px 28px;
       margin-bottom: 32px;
     }
-
     .add-panel h2 {
       font-family: var(--mono);
       font-size: 0.72rem;
@@ -117,12 +99,7 @@
       text-transform: uppercase;
       margin-bottom: 16px;
     }
-
-    .form-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
 
     input, select {
       background: var(--bg);
@@ -137,11 +114,8 @@
       flex: 1;
       min-width: 160px;
     }
-
     input::placeholder { color: var(--muted); }
-
     input:focus, select:focus { border-color: var(--accent); }
-
     select option { background: #1a1a2e; }
 
     .btn {
@@ -156,24 +130,21 @@
       transition: all 0.2s;
       white-space: nowrap;
     }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #0a0a0f;
-    }
-
+    .btn-primary { background: var(--accent); color: #0a0a0f; }
     .btn-primary:hover { background: #00ffb3; transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
 
-    .btn-primary:active { transform: translateY(0); }
-
-    /* orders table */
     .table-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
     }
-
     .table-header {
       display: flex;
       align-items: center;
@@ -181,7 +152,6 @@
       padding: 16px 24px;
       border-bottom: 1px solid var(--border);
     }
-
     .table-header h2 {
       font-family: var(--mono);
       font-size: 0.72rem;
@@ -189,7 +159,6 @@
       color: var(--muted);
       text-transform: uppercase;
     }
-
     #order-count {
       font-family: var(--mono);
       font-size: 0.72rem;
@@ -199,11 +168,7 @@
       border-radius: 100px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
+    table { width: 100%; border-collapse: collapse; }
     thead th {
       font-family: var(--mono);
       font-size: 0.68rem;
@@ -214,44 +179,28 @@
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
-
     tbody tr {
       border-bottom: 1px solid var(--border);
       transition: background 0.2s;
     }
-
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: rgba(255,255,255,0.02); }
 
-    tbody tr.flash-new {
-      animation: flashNew 1.2s ease-out;
-    }
-
-    tbody tr.flash-update {
-      animation: flashUpdate 1.2s ease-out;
-    }
-
+    /* flash animations — only color changes, no reorder */
     @keyframes flashNew {
       0% { background: rgba(0, 229, 160, 0.18); }
       100% { background: transparent; }
     }
-
     @keyframes flashUpdate {
       0% { background: rgba(245, 166, 35, 0.18); }
       100% { background: transparent; }
     }
+    .flash-new { animation: flashNew 1.5s ease-out; }
+    .flash-update { animation: flashUpdate 1.5s ease-out; }
 
-    td {
-      padding: 14px 20px;
-      font-size: 0.88rem;
-      color: var(--text);
-    }
-
-    td.id-col {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
+    td { padding: 14px 20px; font-size: 0.88rem; color: var(--text); }
+    td.id-col { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+    td.time-col { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
     .badge {
       display: inline-block;
@@ -262,13 +211,11 @@
       letter-spacing: 0.06em;
       font-weight: 700;
     }
-
     .badge-pending  { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
     .badge-shipped  { background: rgba(99,179,237,0.15); color: #63b3ed; border: 1px solid rgba(99,179,237,0.3); }
-    .badge-delivered{ background: rgba(0,229,160,0.15);  color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
+    .badge-delivered{ background: rgba(0,229,160,0.15); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
 
     .action-btns { display: flex; gap: 8px; }
-
     .btn-sm {
       padding: 5px 12px;
       font-size: 0.68rem;
@@ -280,15 +227,8 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-
     .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
     .btn-sm.del:hover { border-color: var(--danger); color: var(--danger); }
-
-    td.time-col {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
 
     /* activity log */
     .log-wrap {
@@ -298,7 +238,6 @@
       border-radius: 10px;
       overflow: hidden;
     }
-
     .log-header {
       padding: 14px 24px;
       border-bottom: 1px solid var(--border);
@@ -308,7 +247,6 @@
       color: var(--muted);
       text-transform: uppercase;
     }
-
     #activity-log {
       padding: 16px 24px;
       max-height: 160px;
@@ -317,7 +255,6 @@
       flex-direction: column;
       gap: 8px;
     }
-
     .log-entry {
       font-family: var(--mono);
       font-size: 0.75rem;
@@ -326,12 +263,10 @@
       align-items: center;
       animation: slideIn 0.3s ease-out;
     }
-
     @keyframes slideIn {
       from { opacity: 0; transform: translateX(-8px); }
       to   { opacity: 1; transform: translateX(0); }
     }
-
     .log-time { color: var(--muted); min-width: 70px; }
     .log-op { min-width: 60px; }
     .log-op.INSERT { color: var(--accent); }
@@ -339,14 +274,64 @@
     .log-op.DELETE { color: var(--danger); }
     .log-msg { color: #8888aa; }
 
-    .empty-state {
-      padding: 48px;
-      text-align: center;
+    .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+
+    /* ── EDIT MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 460px;
+      animation: modalIn 0.2s ease-out;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal h3 {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       color: var(--muted);
-      font-size: 0.88rem;
+      margin-bottom: 24px;
+    }
+    .modal-field { margin-bottom: 16px; }
+    .modal-field label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .modal-field input,
+    .modal-field select {
+      width: 100%;
+      flex: none;
+      min-width: unset;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+      justify-content: flex-end;
     }
 
-    /* scrollbar */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -365,7 +350,6 @@
 <main>
   <p class="page-title">// live order management dashboard</p>
 
-  <!-- add order -->
   <div class="add-panel">
     <h2>// new order</h2>
     <div class="form-row">
@@ -380,7 +364,6 @@
     </div>
   </div>
 
-  <!-- orders table -->
   <div class="table-wrap">
     <div class="table-header">
       <h2>// orders</h2>
@@ -403,7 +386,6 @@
     </table>
   </div>
 
-  <!-- activity log -->
   <div class="log-wrap">
     <div class="log-header">// activity log</div>
     <div id="activity-log">
@@ -416,30 +398,49 @@
   </div>
 </main>
 
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>// edit order</h3>
+    <input type="hidden" id="edit-id" />
+    <div class="modal-field">
+      <label>Customer Name</label>
+      <input type="text" id="edit-customer" placeholder="Customer name" />
+    </div>
+    <div class="modal-field">
+      <label>Product Name</label>
+      <input type="text" id="edit-product" placeholder="Product name" />
+    </div>
+    <div class="modal-field">
+      <label>Status</label>
+      <select id="edit-status">
+        <option value="pending">Pending</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // figure out ws url — works locally and when hosted
   const protocol = location.protocol === "https:" ? "wss:" : "ws:";
   const wsUrl = `${protocol}//${location.host}`;
 
-  let orders = {};   // keyed by id for fast lookups
+  // orders stored by id — insertion order preserved for display
+  let orders = {};
+  // track the order ids in the sequence they were first inserted
+  let orderIds = [];
   let ws;
 
   function connect() {
     ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-      setStatus(true);
-      loadOrders();
-    };
-
-    ws.onclose = () => {
-      setStatus(false);
-      // try reconnecting every 3 seconds
-      setTimeout(connect, 3000);
-    };
-
+    ws.onopen = () => { setStatus(true); loadOrders(); };
+    ws.onclose = () => { setStatus(false); setTimeout(connect, 3000); };
     ws.onerror = () => setStatus(false);
-
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       handleEvent(msg.operation, msg.data);
@@ -457,6 +458,8 @@
     const res = await fetch("/api/orders");
     const data = await res.json();
     orders = {};
+    // server returns newest first — reverse so oldest is at bottom
+    orderIds = data.map(o => o.id);
     data.forEach(o => orders[o.id] = o);
     renderTable();
   }
@@ -464,14 +467,18 @@
   function handleEvent(operation, data) {
     if (operation === "INSERT") {
       orders[data.id] = data;
+      // new orders go to the top of the list
+      orderIds.unshift(data.id);
       renderTable();
       flashRow(data.id, "flash-new");
     } else if (operation === "UPDATE") {
       orders[data.id] = data;
-      renderTable();
+      // just update data — do NOT change position in orderIds
+      updateRow(data);
       flashRow(data.id, "flash-update");
     } else if (operation === "DELETE") {
       delete orders[data.id];
+      orderIds = orderIds.filter(id => id !== data.id);
       renderTable();
     }
     addLog(operation, data);
@@ -479,40 +486,49 @@
 
   function renderTable() {
     const tbody = document.getElementById("orders-body");
-    const list = Object.values(orders).sort((a, b) =>
-      new Date(b.updated_at) - new Date(a.updated_at)
-    );
 
     document.getElementById("order-count").textContent =
-      `${list.length} order${list.length !== 1 ? "s" : ""}`;
+      `${orderIds.length} order${orderIds.length !== 1 ? "s" : ""}`;
 
-    if (list.length === 0) {
+    if (orderIds.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" class="empty-state">no orders yet — add one above</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = list.map(o => `
-      <tr id="row-${o.id}">
-        <td class="id-col">#${o.id}</td>
-        <td>${escape(o.customer_name)}</td>
-        <td>${escape(o.product_name)}</td>
-        <td><span class="badge badge-${o.status}">${o.status}</span></td>
-        <td class="time-col">${formatTime(o.updated_at)}</td>
-        <td>
-          <div class="action-btns">
-            <button class="btn-sm" onclick="cycleStatus(${o.id}, '${o.status}')">update</button>
-            <button class="btn-sm del" onclick="deleteOrder(${o.id})">delete</button>
-          </div>
-        </td>
-      </tr>
-    `).join("");
+    tbody.innerHTML = orderIds.map(id => {
+      const o = orders[id];
+      return `
+        <tr id="row-${o.id}">
+          <td class="id-col">#${o.id}</td>
+          <td>${esc(o.customer_name)}</td>
+          <td>${esc(o.product_name)}</td>
+          <td><span class="badge badge-${o.status}">${o.status}</span></td>
+          <td class="time-col">${formatTime(o.updated_at)}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-sm" onclick="openEditModal(${o.id})">edit</button>
+              <button class="btn-sm del" onclick="deleteOrder(${o.id})">delete</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join("");
+  }
+
+  // update a single row in place without re-rendering the whole table
+  function updateRow(o) {
+    const row = document.getElementById(`row-${o.id}`);
+    if (!row) { renderTable(); return; }
+    row.cells[1].textContent = o.customer_name;
+    row.cells[2].textContent = o.product_name;
+    row.cells[3].innerHTML = `<span class="badge badge-${o.status}">${o.status}</span>`;
+    row.cells[4].textContent = formatTime(o.updated_at);
   }
 
   function flashRow(id, cls) {
     const row = document.getElementById(`row-${id}`);
     if (!row) return;
     row.classList.remove("flash-new", "flash-update");
-    void row.offsetWidth; // reflow to restart animation
+    void row.offsetWidth;
     row.classList.add(cls);
   }
 
@@ -523,22 +539,17 @@
     entry.innerHTML = `
       <span class="log-time">${new Date().toLocaleTimeString()}</span>
       <span class="log-op ${op}">${op}</span>
-      <span class="log-msg">order #${data.id} — ${data.customer_name || "deleted"}</span>
-    `;
+      <span class="log-msg">order #${data.id} — ${data.customer_name || "deleted"}</span>`;
     log.prepend(entry);
-    // keep log from growing forever
     while (log.children.length > 50) log.removeChild(log.lastChild);
   }
 
+  // ── ADD ORDER ──
   async function addOrder() {
     const customer = document.getElementById("customer").value.trim();
-    const product = document.getElementById("product").value.trim();
-    const status = document.getElementById("status-select").value;
-
-    if (!customer || !product) {
-      alert("please fill in customer and product");
-      return;
-    }
+    const product  = document.getElementById("product").value.trim();
+    const status   = document.getElementById("status-select").value;
+    if (!customer || !product) { alert("please fill in customer and product"); return; }
 
     await fetch("/api/orders", {
       method: "POST",
@@ -547,21 +558,48 @@
     });
 
     document.getElementById("customer").value = "";
-    document.getElementById("product").value = "";
+    document.getElementById("product").value  = "";
   }
 
-  const statuses = ["pending", "shipped", "delivered"];
+  // ── EDIT MODAL ──
+  function openEditModal(id) {
+    const o = orders[id];
+    document.getElementById("edit-id").value       = o.id;
+    document.getElementById("edit-customer").value = o.customer_name;
+    document.getElementById("edit-product").value  = o.product_name;
+    document.getElementById("edit-status").value   = o.status;
+    document.getElementById("edit-modal").classList.add("open");
+  }
 
-  async function cycleStatus(id, current) {
-    const next = statuses[(statuses.indexOf(current) + 1) % statuses.length];
+  function closeModal() {
+    document.getElementById("edit-modal").classList.remove("open");
+  }
+
+  // close modal when clicking outside
+  document.getElementById("edit-modal").addEventListener("click", function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  async function saveEdit() {
+    const id       = document.getElementById("edit-id").value;
+    const customer = document.getElementById("edit-customer").value.trim();
+    const product  = document.getElementById("edit-product").value.trim();
+    const status   = document.getElementById("edit-status").value;
+
+    if (!customer || !product) { alert("all fields are required"); return; }
+
     await fetch(`/api/orders/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next })
+      body: JSON.stringify({ customer_name: customer, product_name: product, status })
     });
+
+    closeModal();
   }
 
+  // ── DELETE ──
   async function deleteOrder(id) {
+    if (!confirm(`delete order #${id}?`)) return;
     await fetch(`/api/orders/${id}`, { method: "DELETE" });
   }
 
@@ -572,8 +610,11 @@
     });
   }
 
-  function escape(str) {
-    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;");
   }
 
   connect();
