@@ -1,6 +1,6 @@
 # OrderPulse — Real-Time Order Updates
 
-A backend system that pushes database changes to connected clients **instantly**, without any polling. Built for the Apt Interview Assignment.
+A backend system that pushes database changes to connected clients **instantly**, without any polling. 
 
 🔴 **Live Demo:** https://realtime-db-update-assignment.onrender.com
 
