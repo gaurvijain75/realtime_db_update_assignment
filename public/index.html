@@ -7,194 +7,76 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0a0a0f;
-      --surface: #111118;
-      --border: #1e1e2e;
-      --accent: #00e5a0;
-      --accent-dim: rgba(0, 229, 160, 0.12);
-      --warn: #f5a623;
-      --danger: #ff4d6d;
-      --text: #e8e8f0;
-      --muted: #5a5a7a;
-      --mono: 'Space Mono', monospace;
-      --sans: 'DM Sans', sans-serif;
+      --bg: #0a0a0f; --surface: #111118; --border: #1e1e2e;
+      --accent: #00e5a0; --accent-dim: rgba(0,229,160,0.12);
+      --warn: #f5a623; --danger: #ff4d6d;
+      --text: #e8e8f0; --muted: #5a5a7a;
+      --mono: 'Space Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
 
     header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 40px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px; border-bottom: 1px solid var(--border);
+      background: var(--surface); position: sticky; top: 0; z-index: 100;
     }
-
-    .logo {
-      font-family: var(--mono);
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-    }
+    .logo { font-family: var(--mono); font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; color: var(--accent); }
     .logo span { color: var(--text); }
-
     .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      padding: 6px 14px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      transition: all 0.3s;
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
+      padding: 6px 14px; border-radius: 100px; border: 1px solid var(--border);
+      background: var(--bg); transition: all 0.3s;
     }
     .status-pill.connected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
     .status-pill.disconnected { color: var(--danger); border-color: var(--danger); }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
     .connected .dot { animation: pulse 1.8s ease-in-out infinite; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
     main { padding: 36px 40px; max-width: 1200px; margin: 0 auto; }
+    .page-title { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
 
-    .page-title {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-
-    .add-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px 28px;
-      margin-bottom: 32px;
-    }
-    .add-panel h2 {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
+    .add-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; margin-bottom: 32px; }
+    .add-panel h2 { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
     .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
 
     input, select {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 0.9rem;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color 0.2s;
-      flex: 1;
-      min-width: 160px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); font-family: var(--sans); font-size: 0.9rem;
+      padding: 10px 14px; outline: none; transition: border-color 0.2s;
+      flex: 1; min-width: 160px;
     }
     input::placeholder { color: var(--muted); }
     input:focus, select:focus { border-color: var(--accent); }
     select option { background: #1a1a2e; }
 
     .btn {
-      padding: 10px 22px;
-      border-radius: 6px;
-      border: none;
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
+      padding: 10px 22px; border-radius: 6px; border: none;
+      font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; white-space: nowrap;
     }
     .btn-primary { background: var(--accent); color: #0a0a0f; }
     .btn-primary:hover { background: #00ffb3; transform: translateY(-1px); }
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--muted); }
     .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+    .btn-danger { background: rgba(255,77,109,0.12); border: 1px solid rgba(255,77,109,0.3); color: var(--danger); }
+    .btn-danger:hover { background: rgba(255,77,109,0.22); }
 
-    .table-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .table-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
-    }
-    .table-header h2 {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    #order-count {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--accent);
-      background: var(--accent-dim);
-      padding: 3px 10px;
-      border-radius: 100px;
-    }
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .table-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+    .table-header h2 { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+    #order-count { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); background: var(--accent-dim); padding: 3px 10px; border-radius: 100px; }
 
     table { width: 100%; border-collapse: collapse; }
-    thead th {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 12px 20px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.2s;
-    }
+    thead th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 12px 20px; text-align: left; border-bottom: 1px solid var(--border); }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.2s; }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: rgba(255,255,255,0.02); }
 
-    /* flash animations — only color changes, no reorder */
-    @keyframes flashNew {
-      0% { background: rgba(0, 229, 160, 0.18); }
-      100% { background: transparent; }
-    }
-    @keyframes flashUpdate {
-      0% { background: rgba(245, 166, 35, 0.18); }
-      100% { background: transparent; }
-    }
+    @keyframes flashNew { 0%{background:rgba(0,229,160,0.18)} 100%{background:transparent} }
+    @keyframes flashUpdate { 0%{background:rgba(245,166,35,0.18)} 100%{background:transparent} }
     .flash-new { animation: flashNew 1.5s ease-out; }
     .flash-update { animation: flashUpdate 1.5s ease-out; }
 
@@ -202,71 +84,28 @@
     td.id-col { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
     td.time-col { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.06em;
-      font-weight: 700;
-    }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; font-weight: 700; }
     .badge-pending  { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
     .badge-shipped  { background: rgba(99,179,237,0.15); color: #63b3ed; border: 1px solid rgba(99,179,237,0.3); }
     .badge-delivered{ background: rgba(0,229,160,0.15); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
 
     .action-btns { display: flex; gap: 8px; }
     .btn-sm {
-      padding: 5px 12px;
-      font-size: 0.68rem;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-family: var(--mono);
-      cursor: pointer;
-      transition: all 0.2s;
+      padding: 5px 12px; font-size: 0.68rem; border-radius: 4px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); font-family: var(--mono); cursor: pointer; transition: all 0.2s;
     }
     .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
     .btn-sm.del:hover { border-color: var(--danger); color: var(--danger); }
 
     /* activity log */
-    .log-wrap {
-      margin-top: 28px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .log-header {
-      padding: 14px 24px;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    #activity-log {
-      padding: 16px 24px;
-      max-height: 160px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .log-entry {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      animation: slideIn 0.3s ease-out;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-8px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
+    .log-wrap { margin-top: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .log-header { padding: 14px 24px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+    #activity-log { padding: 16px 24px; max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .log-entry { font-family: var(--mono); font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px; animation: slideIn 0.3s ease-out; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .log-entry:last-child { border-bottom: none; }
+    .log-top { display: flex; gap: 12px; align-items: center; }
+    @keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
     .log-time { color: var(--muted); min-width: 70px; }
     .log-op { min-width: 60px; }
     .log-op.INSERT { color: var(--accent); }
@@ -274,63 +113,44 @@
     .log-op.DELETE { color: var(--danger); }
     .log-msg { color: #8888aa; }
 
+    /* change details shown under the log entry */
+    .log-changes { display: flex; flex-wrap: wrap; gap: 6px; padding-left: 82px; }
+    .change-pill {
+      font-size: 0.68rem; padding: 2px 8px; border-radius: 4px;
+      background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2);
+      color: var(--warn);
+    }
+    .change-pill .old { text-decoration: line-through; opacity: 0.6; margin-right: 4px; }
+    .change-pill .arrow { opacity: 0.5; margin-right: 4px; }
+    .change-pill .new { color: var(--accent); }
+
     .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: 0.88rem; }
 
-    /* ── EDIT MODAL ── */
+    /* modals shared styles */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); z-index: 200;
+      align-items: center; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
-
     .modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      width: 100%;
-      max-width: 460px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px; width: 100%; max-width: 460px;
       animation: modalIn 0.2s ease-out;
     }
-    @keyframes modalIn {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .modal h3 {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
+    @keyframes modalIn { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+    .modal h3 { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
     .modal-field { margin-bottom: 16px; }
-    .modal-field label {
-      display: block;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .modal-field input,
-    .modal-field select {
-      width: 100%;
-      flex: none;
-      min-width: unset;
-    }
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 24px;
-      justify-content: flex-end;
-    }
+    .modal-field label { display: block; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .modal-field input, .modal-field select { width: 100%; flex: none; min-width: unset; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+    /* delete confirm modal specifics */
+    .delete-info { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+    .delete-info-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85rem; }
+    .delete-info-row .label { color: var(--muted); font-family: var(--mono); font-size: 0.7rem; }
+    .delete-info-row .value { color: var(--text); }
+    .delete-warning { font-size: 0.82rem; color: var(--danger); margin-bottom: 4px; opacity: 0.8; }
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -372,12 +192,8 @@
     <table>
       <thead>
         <tr>
-          <th>#ID</th>
-          <th>Customer</th>
-          <th>Product</th>
-          <th>Status</th>
-          <th>Updated</th>
-          <th>Actions</th>
+          <th>#ID</th><th>Customer</th><th>Product</th>
+          <th>Status</th><th>Updated</th><th>Actions</th>
         </tr>
       </thead>
       <tbody id="orders-body">
@@ -390,18 +206,20 @@
     <div class="log-header">// activity log</div>
     <div id="activity-log">
       <div class="log-entry">
-        <span class="log-time">--:--:--</span>
-        <span class="log-op" style="color:var(--muted)">SYSTEM</span>
-        <span class="log-msg">waiting for database events...</span>
+        <div class="log-top">
+          <span class="log-time">--:--:--</span>
+          <span class="log-op" style="color:var(--muted)">SYSTEM</span>
+          <span class="log-msg">waiting for database events...</span>
+        </div>
       </div>
     </div>
   </div>
 </main>
 
-<!-- Edit Modal -->
+<!-- Edit / Update Modal -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
-    <h3>// edit order</h3>
+    <h3>// update order</h3>
     <input type="hidden" id="edit-id" />
     <div class="modal-field">
       <label>Customer Name</label>
@@ -420,8 +238,21 @@
       </select>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h3>// confirm deletion</h3>
+    <div class="delete-info" id="delete-info"></div>
+    <p class="delete-warning">⚠ This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete Order</button>
     </div>
   </div>
 </div>
@@ -430,63 +261,77 @@
   const protocol = location.protocol === "https:" ? "wss:" : "ws:";
   const wsUrl = `${protocol}//${location.host}`;
 
-  // orders stored by id — insertion order preserved for display
-  let orders = {};
-  // track the order ids in the sequence they were first inserted
+  let orders  = {};
   let orderIds = [];
+  let pendingDeleteId = null;
   let ws;
 
   function connect() {
     ws = new WebSocket(wsUrl);
-    ws.onopen = () => { setStatus(true); loadOrders(); };
+    ws.onopen  = () => { setStatus(true); loadOrders(); };
     ws.onclose = () => { setStatus(false); setTimeout(connect, 3000); };
     ws.onerror = () => setStatus(false);
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      handleEvent(msg.operation, msg.data);
+    ws.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+      handleEvent(msg.operation, msg.data, msg.changes);
     };
   }
 
   function setStatus(connected) {
     const pill = document.getElementById("status-pill");
-    const text = document.getElementById("status-text");
     pill.className = `status-pill ${connected ? "connected" : "disconnected"}`;
-    text.textContent = connected ? "LIVE" : "RECONNECTING";
+    document.getElementById("status-text").textContent = connected ? "LIVE" : "RECONNECTING";
   }
 
   async function loadOrders() {
-    const res = await fetch("/api/orders");
+    const res  = await fetch("/api/orders");
     const data = await res.json();
-    orders = {};
-    // server returns newest first — reverse so oldest is at bottom
+    orders   = {};
     orderIds = data.map(o => o.id);
     data.forEach(o => orders[o.id] = o);
     renderTable();
   }
 
-  function handleEvent(operation, data) {
+  function handleEvent(operation, data, changes) {
     if (operation === "INSERT") {
       orders[data.id] = data;
-      // new orders go to the top of the list
       orderIds.unshift(data.id);
       renderTable();
       flashRow(data.id, "flash-new");
+      addLog("INSERT", data, null);
+
     } else if (operation === "UPDATE") {
+      // figure out what actually changed before overwriting
+      const prev = orders[data.id] || {};
+      const diff = detectChanges(prev, data);
       orders[data.id] = data;
-      // just update data — do NOT change position in orderIds
       updateRow(data);
       flashRow(data.id, "flash-update");
+      addLog("UPDATE", data, diff);
+
     } else if (operation === "DELETE") {
+      const deleted = orders[data.id];
       delete orders[data.id];
       orderIds = orderIds.filter(id => id !== data.id);
       renderTable();
+      addLog("DELETE", deleted || data, null);
     }
-    addLog(operation, data);
+  }
+
+  // compare old and new row — return array of {field, from, to}
+  function detectChanges(oldRow, newRow) {
+    const watchFields = ["customer_name", "product_name", "status"];
+    const diff = [];
+    for (const f of watchFields) {
+      if (String(oldRow[f] || "") !== String(newRow[f] || "")) {
+        diff.push({ field: f.replace("_", " "), from: oldRow[f] || "—", to: newRow[f] });
+      }
+    }
+    return diff;
   }
 
   function renderTable() {
     const tbody = document.getElementById("orders-body");
-
     document.getElementById("order-count").textContent =
       `${orderIds.length} order${orderIds.length !== 1 ? "s" : ""}`;
 
@@ -494,33 +339,32 @@
       tbody.innerHTML = `<tr><td colspan="6" class="empty-state">no orders yet — add one above</td></tr>`;
       return;
     }
-
-    tbody.innerHTML = orderIds.map(id => {
-      const o = orders[id];
-      return `
-        <tr id="row-${o.id}">
-          <td class="id-col">#${o.id}</td>
-          <td>${esc(o.customer_name)}</td>
-          <td>${esc(o.product_name)}</td>
-          <td><span class="badge badge-${o.status}">${o.status}</span></td>
-          <td class="time-col">${formatTime(o.updated_at)}</td>
-          <td>
-            <div class="action-btns">
-              <button class="btn-sm" onclick="openEditModal(${o.id})">edit</button>
-              <button class="btn-sm del" onclick="deleteOrder(${o.id})">delete</button>
-            </div>
-          </td>
-        </tr>`;
-    }).join("");
+    tbody.innerHTML = orderIds.map(id => rowHTML(orders[id])).join("");
   }
 
-  // update a single row in place without re-rendering the whole table
+  function rowHTML(o) {
+    return `
+      <tr id="row-${o.id}">
+        <td class="id-col">#${o.id}</td>
+        <td>${esc(o.customer_name)}</td>
+        <td>${esc(o.product_name)}</td>
+        <td><span class="badge badge-${o.status}">${o.status}</span></td>
+        <td class="time-col">${formatTime(o.updated_at)}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-sm" onclick="openEditModal(${o.id})">update</button>
+            <button class="btn-sm del" onclick="openDeleteModal(${o.id})">delete</button>
+          </div>
+        </td>
+      </tr>`;
+  }
+
   function updateRow(o) {
     const row = document.getElementById(`row-${o.id}`);
     if (!row) { renderTable(); return; }
     row.cells[1].textContent = o.customer_name;
     row.cells[2].textContent = o.product_name;
-    row.cells[3].innerHTML = `<span class="badge badge-${o.status}">${o.status}</span>`;
+    row.cells[3].innerHTML   = `<span class="badge badge-${o.status}">${o.status}</span>`;
     row.cells[4].textContent = formatTime(o.updated_at);
   }
 
@@ -532,14 +376,34 @@
     row.classList.add(cls);
   }
 
-  function addLog(op, data) {
-    const log = document.getElementById("activity-log");
+  // log with optional change pills
+  function addLog(op, data, diff) {
+    const log   = document.getElementById("activity-log");
     const entry = document.createElement("div");
     entry.className = "log-entry";
+
+    let changePills = "";
+    if (diff && diff.length > 0) {
+      changePills = `<div class="log-changes">` +
+        diff.map(d =>
+          `<span class="change-pill">
+            <span class="label">${d.field}:</span>
+            <span class="old">${esc(String(d.from))}</span>
+            <span class="arrow">→</span>
+            <span class="new">${esc(String(d.to))}</span>
+          </span>`
+        ).join("") +
+        `</div>`;
+    }
+
     entry.innerHTML = `
-      <span class="log-time">${new Date().toLocaleTimeString()}</span>
-      <span class="log-op ${op}">${op}</span>
-      <span class="log-msg">order #${data.id} — ${data.customer_name || "deleted"}</span>`;
+      <div class="log-top">
+        <span class="log-time">${new Date().toLocaleTimeString()}</span>
+        <span class="log-op ${op}">${op}</span>
+        <span class="log-msg">order #${data.id} — ${esc(data.customer_name || "deleted")}</span>
+      </div>
+      ${changePills}`;
+
     log.prepend(entry);
     while (log.children.length > 50) log.removeChild(log.lastChild);
   }
@@ -550,18 +414,16 @@
     const product  = document.getElementById("product").value.trim();
     const status   = document.getElementById("status-select").value;
     if (!customer || !product) { alert("please fill in customer and product"); return; }
-
     await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ customer_name: customer, product_name: product, status })
     });
-
     document.getElementById("customer").value = "";
     document.getElementById("product").value  = "";
   }
 
-  // ── EDIT MODAL ──
+  // ── UPDATE MODAL ──
   function openEditModal(id) {
     const o = orders[id];
     document.getElementById("edit-id").value       = o.id;
@@ -570,51 +432,55 @@
     document.getElementById("edit-status").value   = o.status;
     document.getElementById("edit-modal").classList.add("open");
   }
-
-  function closeModal() {
+  function closeEditModal() {
     document.getElementById("edit-modal").classList.remove("open");
   }
-
-  // close modal when clicking outside
   document.getElementById("edit-modal").addEventListener("click", function(e) {
-    if (e.target === this) closeModal();
+    if (e.target === this) closeEditModal();
   });
-
   async function saveEdit() {
     const id       = document.getElementById("edit-id").value;
     const customer = document.getElementById("edit-customer").value.trim();
     const product  = document.getElementById("edit-product").value.trim();
     const status   = document.getElementById("edit-status").value;
-
     if (!customer || !product) { alert("all fields are required"); return; }
-
     await fetch(`/api/orders/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ customer_name: customer, product_name: product, status })
     });
-
-    closeModal();
+    closeEditModal();
   }
 
-  // ── DELETE ──
-  async function deleteOrder(id) {
-    if (!confirm(`delete order #${id}?`)) return;
-    await fetch(`/api/orders/${id}`, { method: "DELETE" });
+  // ── DELETE MODAL ──
+  function openDeleteModal(id) {
+    const o = orders[id];
+    pendingDeleteId = id;
+    document.getElementById("delete-info").innerHTML = `
+      <div class="delete-info-row"><span class="label">Order ID</span><span class="value">#${o.id}</span></div>
+      <div class="delete-info-row"><span class="label">Customer</span><span class="value">${esc(o.customer_name)}</span></div>
+      <div class="delete-info-row"><span class="label">Product</span><span class="value">${esc(o.product_name)}</span></div>
+      <div class="delete-info-row"><span class="label">Status</span><span class="value"><span class="badge badge-${o.status}">${o.status}</span></span></div>`;
+    document.getElementById("delete-modal").classList.add("open");
+  }
+  function closeDeleteModal() {
+    document.getElementById("delete-modal").classList.remove("open");
+    pendingDeleteId = null;
+  }
+  document.getElementById("delete-modal").addEventListener("click", function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+  async function confirmDelete() {
+    if (!pendingDeleteId) return;
+    await fetch(`/api/orders/${pendingDeleteId}`, { method: "DELETE" });
+    closeDeleteModal();
   }
 
   function formatTime(ts) {
-    return new Date(ts).toLocaleString("en-IN", {
-      day: "2-digit", month: "short",
-      hour: "2-digit", minute: "2-digit"
-    });
+    return new Date(ts).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
   }
-
   function esc(str) {
-    return String(str)
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;");
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   }
 
   connect();
