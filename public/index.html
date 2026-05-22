@@ -124,7 +124,11 @@
     .change-pill .arrow { opacity: 0.5; margin-right: 4px; }
     .change-pill .new { color: var(--accent); }
 
-    .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .log-hist {
+      font-size: 0.62rem; padding: 1px 6px; border-radius: 3px;
+      background: rgba(90,90,122,0.2); border: 1px solid rgba(90,90,122,0.3);
+      color: var(--muted); margin-left: auto;
+    }
 
     /* modals shared styles */
     .modal-overlay {
@@ -273,7 +277,18 @@
     ws.onerror = () => setStatus(false);
     ws.onmessage = (e) => {
       const msg = JSON.parse(e.data);
-      handleEvent(msg.operation, msg.data, msg.changes);
+
+      if (msg.type === "history") {
+        // replay past events into the log oldest-first so newest ends up on top
+        const oldest = [...msg.events].reverse();
+        oldest.forEach(ev => {
+          const prev = {};   // no diff info for historical events
+          addLog(ev.operation, ev.data, null, true);
+        });
+      } else {
+        // live event
+        handleEvent(msg.operation, msg.data);
+      }
     };
   }
 
@@ -298,7 +313,7 @@
       orderIds.unshift(data.id);
       renderTable();
       flashRow(data.id, "flash-new");
-      addLog("INSERT", data, null);
+      addLog("INSERT", data, null, false);
 
     } else if (operation === "UPDATE") {
       // figure out what actually changed before overwriting
@@ -307,14 +322,14 @@
       orders[data.id] = data;
       updateRow(data);
       flashRow(data.id, "flash-update");
-      addLog("UPDATE", data, diff);
+      addLog("UPDATE", data, diff, false);
 
     } else if (operation === "DELETE") {
       const deleted = orders[data.id];
       delete orders[data.id];
       orderIds = orderIds.filter(id => id !== data.id);
       renderTable();
-      addLog("DELETE", deleted || data, null);
+      addLog("DELETE", deleted || data, null, false);
     }
   }
 
@@ -376,8 +391,8 @@
     row.classList.add(cls);
   }
 
-  // log with optional change pills
-  function addLog(op, data, diff) {
+  // log with optional change pills; historical=true means it came from server memory on connect
+  function addLog(op, data, diff, historical) {
     const log   = document.getElementById("activity-log");
     const entry = document.createElement("div");
     entry.className = "log-entry";
@@ -401,6 +416,7 @@
         <span class="log-time">${new Date().toLocaleTimeString()}</span>
         <span class="log-op ${op}">${op}</span>
         <span class="log-msg">order #${data.id} — ${esc(data.customer_name || "deleted")}</span>
+        ${historical ? `<span class="log-hist">history</span>` : ""}
       </div>
       ${changePills}`;
 

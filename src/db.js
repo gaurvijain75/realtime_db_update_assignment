@@ -63,6 +63,11 @@ async function setupSchema() {
   `);
 
   console.log("schema and trigger ready");
+
+  // pre-load existing rows into cache so UPDATE diffs work on restart
+  const existing = await pool.query("SELECT * FROM orders");
+  existing.rows.forEach(r => rowCache[r.id] = r);
+  console.log(`cached ${existing.rows.length} existing order(s) for diff tracking`);
 }
 
 async function listenForChanges(broadcast) {
@@ -79,7 +84,7 @@ async function listenForChanges(broadcast) {
   listenClient.on("notification", (msg) => {
     try {
       const parsed = JSON.parse(msg.payload);
-      console.log(`db event: ${parsed.operation} on order #${parsed.data.id}`);
+      logEvent(parsed.operation, parsed.data);
       broadcast(parsed);
     } catch (err) {
       console.error("failed to parse notification:", err.message);
@@ -92,3 +97,38 @@ async function listenForChanges(broadcast) {
 }
 
 module.exports = { pool, connectDB, listenForChanges };
+
+// keep a small in-memory snapshot of rows so we can diff on UPDATE
+const rowCache = {};
+
+function logEvent(operation, data) {
+  const id = data.id;
+
+  if (operation === "INSERT") {
+    console.log(`[INSERT] order #${id} — customer: "${data.customer_name}", product: "${data.product_name}", status: "${data.status}"`);
+    rowCache[id] = data;
+
+  } else if (operation === "UPDATE") {
+    const prev = rowCache[id];
+    if (prev) {
+      const fields = ["customer_name", "product_name", "status"];
+      const changes = fields
+        .filter(f => String(prev[f]) !== String(data[f]))
+        .map(f => `${f.replace("_name","")}: "${prev[f]}" → "${data[f]}"`)
+        .join(", ");
+      console.log(`[UPDATE] order #${id} — ${changes || "no visible changes"}`);
+    } else {
+      console.log(`[UPDATE] order #${id} — customer: "${data.customer_name}", status: "${data.status}"`);
+    }
+    rowCache[id] = data;
+
+  } else if (operation === "DELETE") {
+    const prev = rowCache[id];
+    if (prev) {
+      console.log(`[DELETE] order #${id} — removed "${prev.customer_name}" / "${prev.product_name}"`);
+    } else {
+      console.log(`[DELETE] order #${id}`);
+    }
+    delete rowCache[id];
+  }
+}
