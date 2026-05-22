@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrderPulse — Live Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --border: #1e1e2e;
+      --accent: #00e5a0;
+      --accent-dim: rgba(0, 229, 160, 0.12);
+      --warn: #f5a623;
+      --danger: #ff4d6d;
+      --text: #e8e8f0;
+      --muted: #5a5a7a;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* top bar */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .logo span { color: var(--text); }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      transition: all 0.3s;
+    }
+
+    .status-pill.connected {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .status-pill.disconnected { color: var(--danger); border-color: var(--danger); }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .connected .dot { animation: pulse 1.8s ease-in-out infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* main layout */
+    main { padding: 36px 40px; max-width: 1200px; margin: 0 auto; }
+
+    .page-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* add order panel */
+    .add-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+    }
+
+    .add-panel h2 {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      flex: 1;
+      min-width: 160px;
+    }
+
+    input::placeholder { color: var(--muted); }
+
+    input:focus, select:focus { border-color: var(--accent); }
+
+    select option { background: #1a1a2e; }
+
+    .btn {
+      padding: 10px 22px;
+      border-radius: 6px;
+      border: none;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a0f;
+    }
+
+    .btn-primary:hover { background: #00ffb3; transform: translateY(-1px); }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    /* orders table */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header h2 {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    #order-count {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    tbody tr.flash-new {
+      animation: flashNew 1.2s ease-out;
+    }
+
+    tbody tr.flash-update {
+      animation: flashUpdate 1.2s ease-out;
+    }
+
+    @keyframes flashNew {
+      0% { background: rgba(0, 229, 160, 0.18); }
+      100% { background: transparent; }
+    }
+
+    @keyframes flashUpdate {
+      0% { background: rgba(245, 166, 35, 0.18); }
+      100% { background: transparent; }
+    }
+
+    td {
+      padding: 14px 20px;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    td.id-col {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+
+    .badge-pending  { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
+    .badge-shipped  { background: rgba(99,179,237,0.15); color: #63b3ed; border: 1px solid rgba(99,179,237,0.3); }
+    .badge-delivered{ background: rgba(0,229,160,0.15);  color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
+
+    .action-btns { display: flex; gap: 8px; }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.68rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-sm.del:hover { border-color: var(--danger); color: var(--danger); }
+
+    td.time-col {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* activity log */
+    .log-wrap {
+      margin-top: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .log-header {
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    #activity-log {
+      padding: 16px 24px;
+      max-height: 160px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .log-entry {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .log-time { color: var(--muted); min-width: 70px; }
+    .log-op { min-width: 60px; }
+    .log-op.INSERT { color: var(--accent); }
+    .log-op.UPDATE { color: var(--warn); }
+    .log-op.DELETE { color: var(--danger); }
+    .log-msg { color: #8888aa; }
+
+    .empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">ORDER<span>PULSE</span></div>
+  <div class="status-pill disconnected" id="status-pill">
+    <span class="dot"></span>
+    <span id="status-text">CONNECTING</span>
+  </div>
+</header>
+
+<main>
+  <p class="page-title">// live order management dashboard</p>
+
+  <!-- add order -->
+  <div class="add-panel">
+    <h2>// new order</h2>
+    <div class="form-row">
+      <input type="text" id="customer" placeholder="Customer name" />
+      <input type="text" id="product" placeholder="Product name" />
+      <select id="status-select">
+        <option value="pending">Pending</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+      </select>
+      <button class="btn btn-primary" onclick="addOrder()">+ ADD ORDER</button>
+    </div>
+  </div>
+
+  <!-- orders table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <h2>// orders</h2>
+      <span id="order-count">0 orders</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#ID</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="orders-body">
+        <tr><td colspan="6" class="empty-state">no orders yet — add one above</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- activity log -->
+  <div class="log-wrap">
+    <div class="log-header">// activity log</div>
+    <div id="activity-log">
+      <div class="log-entry">
+        <span class="log-time">--:--:--</span>
+        <span class="log-op" style="color:var(--muted)">SYSTEM</span>
+        <span class="log-msg">waiting for database events...</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // figure out ws url — works locally and when hosted
+  const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = `${protocol}//${location.host}`;
+
+  let orders = {};   // keyed by id for fast lookups
+  let ws;
+
+  function connect() {
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      setStatus(true);
+      loadOrders();
+    };
+
+    ws.onclose = () => {
+      setStatus(false);
+      // try reconnecting every 3 seconds
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = () => setStatus(false);
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      handleEvent(msg.operation, msg.data);
+    };
+  }
+
+  function setStatus(connected) {
+    const pill = document.getElementById("status-pill");
+    const text = document.getElementById("status-text");
+    pill.className = `status-pill ${connected ? "connected" : "disconnected"}`;
+    text.textContent = connected ? "LIVE" : "RECONNECTING";
+  }
+
+  async function loadOrders() {
+    const res = await fetch("/api/orders");
+    const data = await res.json();
+    orders = {};
+    data.forEach(o => orders[o.id] = o);
+    renderTable();
+  }
+
+  function handleEvent(operation, data) {
+    if (operation === "INSERT") {
+      orders[data.id] = data;
+      renderTable();
+      flashRow(data.id, "flash-new");
+    } else if (operation === "UPDATE") {
+      orders[data.id] = data;
+      renderTable();
+      flashRow(data.id, "flash-update");
+    } else if (operation === "DELETE") {
+      delete orders[data.id];
+      renderTable();
+    }
+    addLog(operation, data);
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById("orders-body");
+    const list = Object.values(orders).sort((a, b) =>
+      new Date(b.updated_at) - new Date(a.updated_at)
+    );
+
+    document.getElementById("order-count").textContent =
+      `${list.length} order${list.length !== 1 ? "s" : ""}`;
+
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">no orders yet — add one above</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map(o => `
+      <tr id="row-${o.id}">
+        <td class="id-col">#${o.id}</td>
+        <td>${escape(o.customer_name)}</td>
+        <td>${escape(o.product_name)}</td>
+        <td><span class="badge badge-${o.status}">${o.status}</span></td>
+        <td class="time-col">${formatTime(o.updated_at)}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-sm" onclick="cycleStatus(${o.id}, '${o.status}')">update</button>
+            <button class="btn-sm del" onclick="deleteOrder(${o.id})">delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  function flashRow(id, cls) {
+    const row = document.getElementById(`row-${id}`);
+    if (!row) return;
+    row.classList.remove("flash-new", "flash-update");
+    void row.offsetWidth; // reflow to restart animation
+    row.classList.add(cls);
+  }
+
+  function addLog(op, data) {
+    const log = document.getElementById("activity-log");
+    const entry = document.createElement("div");
+    entry.className = "log-entry";
+    entry.innerHTML = `
+      <span class="log-time">${new Date().toLocaleTimeString()}</span>
+      <span class="log-op ${op}">${op}</span>
+      <span class="log-msg">order #${data.id} — ${data.customer_name || "deleted"}</span>
+    `;
+    log.prepend(entry);
+    // keep log from growing forever
+    while (log.children.length > 50) log.removeChild(log.lastChild);
+  }
+
+  async function addOrder() {
+    const customer = document.getElementById("customer").value.trim();
+    const product = document.getElementById("product").value.trim();
+    const status = document.getElementById("status-select").value;
+
+    if (!customer || !product) {
+      alert("please fill in customer and product");
+      return;
+    }
+
+    await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customer_name: customer, product_name: product, status })
+    });
+
+    document.getElementById("customer").value = "";
+    document.getElementById("product").value = "";
+  }
+
+  const statuses = ["pending", "shipped", "delivered"];
+
+  async function cycleStatus(id, current) {
+    const next = statuses[(statuses.indexOf(current) + 1) % statuses.length];
+    await fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: next })
+    });
+  }
+
+  async function deleteOrder(id) {
+    await fetch(`/api/orders/${id}`, { method: "DELETE" });
+  }
+
+  function formatTime(ts) {
+    return new Date(ts).toLocaleString("en-IN", {
+      day: "2-digit", month: "short",
+      hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  function escape(str) {
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  connect();
+</script>
+</body>
+</html>
